@@ -31,21 +31,39 @@ class TorchNetwork(nn.Module):
         TODO: Implement the forward propagation algorithm.
         The method should return the output of the network.
         '''
-        pass
+        # First hidden layer: linear transformation + sigmoid activation
+        z1 = self.linear1(x_train)
+        a1 = self.activation_func(z1)
+        
+        # Second hidden layer: linear transformation + sigmoid activation
+        z2 = self.linear2(a1)
+        a2 = self.activation_func(z2)
+        
+        # Output layer: linear transformation (return raw logits for BCEWithLogitsLoss)
+        output = self.linear3(a2)
+        
+        return output  # Return raw logits, not softmax probabilities
 
 
     def _backward_pass(self, y_train, output):
         '''
         TODO: Implement the backpropagation algorithm responsible for updating the weights of the neural network.
         '''
-        pass
+        # Compute loss using the loss function
+        loss = self.loss_func(output, y_train)
+        
+        # Use PyTorch's automatic differentiation
+        loss.backward()
+        
+        return loss
 
 
     def _update_weights(self):
         '''
         TODO: Update the network weights according to stochastic gradient descent.
         '''
-        pass
+        # Use PyTorch's optimizer to update weights
+        self.optimizer.step()
 
 
     def _flatten(self, x):
@@ -70,7 +88,21 @@ class TorchNetwork(nn.Module):
 
         The method should return the index of the most likeliest output class.
         '''
-        pass
+        # Set model to evaluation mode
+        self.eval()
+        
+        # Flatten input if needed
+        x = self._flatten(x)
+        
+        # Run forward pass
+        with torch.no_grad():  # No gradients needed for prediction
+            logits = self._forward_pass(x)
+            # Apply softmax for prediction
+            # output = self.output_func(logits, dim=1)
+            probabilities = torch.sigmoid(logits)   # we must use sigmoid because that's what BCE expects
+        
+        # Return the index of the highest probability
+        return torch.argmax(probabilities, dim=1) #replaced output by probs here
 
 
     def fit(self, train_loader, val_loader):
@@ -79,7 +111,7 @@ class TorchNetwork(nn.Module):
         for iteration in range(self.epochs):
             for x, y in train_loader:
                 x = self._flatten(x)
-                y = nn.functional.one_hot(y, 10)
+                y = nn.functional.one_hot(y, 10).float()
                 self.optimizer.zero_grad()
 
 

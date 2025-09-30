@@ -45,7 +45,28 @@ class Network():
 
         The method should return the output of the network.
         '''
-        pass
+        # First hidden layer: W1 * x + b1, then sigmoid
+        z1 = np.dot(self.params['W1'], x_train)
+        a1 = self.activation_func(z1)
+        
+        # Second hidden layer: W2 * a1 + b2, then sigmoid  
+        z2 = np.dot(self.params['W2'], a1)
+        a2 = self.activation_func(z2)
+        
+        # Output layer: W3 * a2 + b3, then softmax
+        z3 = np.dot(self.params['W3'], a2)
+        final_output = self.output_func(z3)
+        
+        # Store intermediate values for backpropagation
+        # DO I REALLY NEED THIS
+        output = {
+            'x': x_train,
+            'z1': z1, 'a1': a1,
+            'z2': z2, 'a2': a2,
+            'z3': z3, 'final_output': final_output
+        }
+        
+        return output
 
 
     def _backward_pass(self, y_train, output):
@@ -55,14 +76,62 @@ class Network():
         The method should return a dictionary of the weight gradients which are used to update the weights in self._update_weights().
 
         '''
-        pass
+        # Unpack cache values
+        x = output['x']
+        a1 = output['a1']
+        a2 = output['a2']
+        z1 = output['z1']
+        z2 = output['z2']
+        z3 = output['z3']
+        final_output = output['final_output']
+        
+        # Calculate output layer gradients
+        # dL/dz3 = dL/da3 * da3/dz3
+        dL_da3 = self.cost_func_deriv(y_train, final_output)
+        da3_dz3 = self.output_func_deriv(z3)
+        dz3 = dL_da3 * da3_dz3
+        
+        # Gradient for W3: dL/dW3 = dz3 * a2^T
+        dW3 = np.outer(dz3, a2)
+        
+        # Backpropagate to second hidden layer
+        # dL/da2 = W3^T * dz3
+        da2 = np.dot(self.params['W3'].T, dz3)
+        # dL/dz2 = dL/da2 * da2/dz2
+        da2_dz2 = self.activation_func_deriv(z2)
+        dz2 = da2 * da2_dz2
+        
+        # Gradient for W2: dL/dW2 = dz2 * a1^T
+        dW2 = np.outer(dz2, a1)
+        
+        # Backpropagate to first hidden layer
+        # dL/da1 = W2^T * dz2
+        da1 = np.dot(self.params['W2'].T, dz2)
+        # dL/dz1 = dL/da1 * da1/dz1
+        da1_dz1 = self.activation_func_deriv(z1)
+        dz1 = da1 * da1_dz1
+        
+        # Gradient for W1: dL/dW1 = dz1 * x^T
+        dW1 = np.outer(dz1, x)
+        
+        # Return gradients dictionary
+        weights_gradient = {
+            'W1': dW1,
+            'W2': dW2, 
+            'W3': dW3
+        }
+        
+        return weights_gradient
 
 
     def _update_weights(self, weights_gradient, learning_rate):
         '''
         TODO: Update the network weights according to stochastic gradient descent.
         '''
-        pass
+        # Update each weight matrix using gradient descent
+        # W_new = W_old - learning_rate * gradient
+        for weight_name in self.params:
+            self.params[weight_name] -= learning_rate * weights_gradient[weight_name]
 
 
     def _print_learning_progress(self, start_time, iteration, x_train, y_train, x_val, y_val):
@@ -90,7 +159,14 @@ class Network():
         TODO: Implement the prediction making of the network.
         The method should return the index of the most likeliest output class.
         '''
-        pass
+        # Run forward pass to get network output
+        output = self._forward_pass(x)
+        
+        # Extract the final output probabilities
+        final_output = output['final_output']
+        
+        # Return the index of the highest probability (predicted class)
+        return np.argmax(final_output)
 
 
 
