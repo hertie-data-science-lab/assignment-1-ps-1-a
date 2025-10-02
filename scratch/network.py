@@ -40,25 +40,19 @@ class Network():
 
 
     def _forward_pass(self, x_train):
-        '''
-        TODO: Implement the forward propagation algorithm.
-
-        The method should return the output of the network.
-        '''
-        # First hidden layer: W1 * x + b1, then sigmoid
+        # First we implement the first hidden layer: W1 * x + b1, then sigmoid
         z1 = np.dot(self.params['W1'], x_train)
         a1 = self.activation_func(z1)
         
-        # Second hidden layer: W2 * a1 + b2, then sigmoid  
+        # Second we implement the second hidden layer: W2 * a1 + b2, then sigmoid  
         z2 = np.dot(self.params['W2'], a1)
         a2 = self.activation_func(z2)
         
-        # Output layer: W3 * a2 + b3, then softmax
+        # Third we implement the output layer: W3 * a2 + b3, then softmax
         z3 = np.dot(self.params['W3'], a2)
         final_output = self.output_func(z3)
         
-        # Store intermediate values for backpropagation
-        # DO I REALLY NEED THIS
+        # Store intermediate values for backpropagation later
         output = {
             'x': x_train,
             'z1': z1, 'a1': a1,
@@ -70,13 +64,7 @@ class Network():
 
 
     def _backward_pass(self, y_train, output):
-        '''
-        TODO: Implement the backpropagation algorithm responsible for updating the weights of the neural network.
-
-        The method should return a dictionary of the weight gradients which are used to update the weights in self._update_weights().
-
-        '''
-        # Unpack cache values
+        # Unpack the saved intermediate values
         x = output['x']
         a1 = output['a1']
         a2 = output['a2']
@@ -125,9 +113,6 @@ class Network():
 
 
     def _update_weights(self, weights_gradient, learning_rate):
-        '''
-        TODO: Update the network weights according to stochastic gradient descent.
-        '''
         # Update each weight matrix using gradient descent
         # W_new = W_old - learning_rate * gradient
         for weight_name in self.params:
@@ -155,17 +140,10 @@ class Network():
 
 
     def predict(self, x):
-        '''
-        TODO: Implement the prediction making of the network.
-        The method should return the index of the most likeliest output class.
-        '''
-        # Run forward pass to get network output
+        # Running the forward pass to get network output
         output = self._forward_pass(x)
-        
-        # Extract the final output probabilities
         final_output = output['final_output']
-        
-        # Return the index of the highest probability (predicted class)
+        # Returning the index of the highest probability (predicted class)
         return np.argmax(final_output)
 
 

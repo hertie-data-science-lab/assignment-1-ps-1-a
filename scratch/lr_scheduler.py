@@ -22,7 +22,7 @@ def cosine_annealing(initial_lr, epoch, total_epochs, min_lr=0.0):
     """
     if total_epochs <= 0:
         raise ValueError("total_epochs must be > 0")
-    # Avoid negative values in the formula
+    # In order to avoid negative values in the formula
     t = max(0, min(epoch, total_epochs))
     cos_inner = np.pi * t / total_epochs
     return float(min_lr + (initial_lr - min_lr) * 0.5 * (1.0 + np.cos(cos_inner)))
