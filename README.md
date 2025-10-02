@@ -1,3 +1,15 @@
+
+##### Group PS1A
+- Giulia Maria Petrilli, 236888
+- Nicolas Reichardt, 245611
+- Elena Murray, 239793
+
+
+##### External sources:
+
+The project team made use of external tools to provide support and review solutions to the questions. The large-language model GPT-5 (through ChatGPT) was used to review, lint, and correct code issues and help in typsetting LaTex. Wolfram Alpha was used for mathematical operations like finding the eigenvalues in the practical part. See references in the PDF document.
+
+
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/WPCxMZMM)
 # Deep Learning E1394 - Problem Set 1
 
